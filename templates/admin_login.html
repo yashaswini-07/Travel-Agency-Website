@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelGo Admin - Terminal Core</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.75)), 
+                        url('https://images.unsplash.com/photo-1495107334309-fcf20504a5ab?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover fixed;
+        }
+        .auth-container { width: 100%; max-width: 420px; padding: 20px; z-index: 10; }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(239, 68, 68, 0.25); padding: 40px 35px; border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        }
+        .back-btn { display: inline-flex; align-items: center; gap: 8px; color: #ef4444; font-size: 13px; font-weight: 700; text-decoration: none; text-transform: uppercase; margin-bottom: 25px; transition: 0.2s; }
+        .back-btn:hover { color: #f87171; }
+
+        .brand-header { text-align: center; margin-bottom: 30px; }
+        .brand-header h1 { font-size: 28px; font-weight: 700; color: #f8fafc; }
+        .brand-header h1 span { color: #ef4444; text-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+        .brand-header p { color: #94a3b8; font-size: 13px; margin-top: 6px; }
+
+        .form-group { margin-bottom: 22px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 600; color: #cbd5e1; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.75px; }
+        .input-style { width: 100%; padding: 14px 18px; background: rgba(15, 23, 42, 0.85); border: 2px solid #3f3f46; border-radius: 14px; color: white; font-size: 15px; outline: none; transition: all 0.2s; }
+        .input-style:focus { border-color: #ef4444; background: #0f172a; box-shadow: 0 0 15px rgba(239, 68, 68, 0.15); }
+        
+        .alert-banner { background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; padding: 12px; border-radius: 12px; font-size: 13px; text-align: center; margin-bottom: 20px; }
+        .btn-submit { width: 100%; background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: white; border: none; padding: 15px; font-size: 15px; font-weight: 700; border-radius: 14px; cursor: pointer; transition: all 0.2s; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.2); }
+        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 15px 25px rgba(239, 68, 68, 0.3); }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="glass-card">
+            <a href="{{ url_for('user_login') }}" class="back-btn">⬅ Passenger Portal</a>
+            <div class="brand-header">
+                <h1>Admin<span>Core</span></h1>
+                <p>Authorized access to master system logs</p>
+            </div>
+            {% if msg %}
+                <div class="alert-banner">⚠️ {{ msg }}</div>
+            {% endif %}
+            <form method="POST" action="{{ url_for('admin_login') }}">
+                <div class="form-group">
+                    <label>Admin Username</label>
+                    <input type="text" name="username" class="input-style" placeholder="root_admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Secret Security Key</label>
+                    <input type="password" name="password" class="input-style" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-submit">Authenticate Terminal</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

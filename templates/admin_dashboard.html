@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelGo Admin Management Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin:0; padding:0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #111827; color: #f9fafb; padding: 40px; }
+        .panel { max-width: 1200px; margin: 0 auto; background: #1f2937; padding: 35px; border-radius: 16px; border: 1px solid #374151; }
+        .nav-strip { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #374151; padding-bottom: 20px; margin-bottom: 30px; }
+        .left-actions { display: flex; align-items: center; gap: 15px; }
+        .add-btn { background: #10b981; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size:14px; border:none; display: inline-flex; align-items: center; transition: background 0.2s; }
+        .add-btn:hover { background: #059669; }
+        .logout { background: #ef4444; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size:14px; }
+        .section-title { font-size: 20px; color: #fff; margin: 30px 0 15px 0; font-weight: 700; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { padding: 16px; text-align: left; border-bottom: 1px solid #374151; font-size: 14px; }
+        th { background: #111827; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; font-size: 12px; }
+        tr:hover { background: rgba(255, 255, 255, 0.02); }
+        .badge { background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 4px 10px; border-radius: 6px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="panel">
+        <div class="nav-strip">
+            <div class="left-actions">
+                <a href="{{ url_for('add_new_train') }}" class="add-btn">➕ Add New Train</a>
+            </div>
+            <a href="{{ url_for('logout') }}" class="logout">Disconnect Session</a>
+        </div>
+        
+        <div class="section-title">Passenger Records Master Directory Profile</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Customer Details</th>
+                    <th>Phone Number</th>
+                    <th>Residential Address</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in customers_list %}
+                <tr>
+                    <td>#{{ c.customerid }}</td>
+                    <td><b>{{ c.name }}</b><br><span style="color:#9ca3af; font-size:12px;">{{ c.email }}</span></td>
+                    <td>{{ c.phone_number }}</td>
+                    <td>{{ c.address }}</td>
+                    <td><span class="badge" style="color: #10b981; background: rgba(16,185,129,0.15)">Active</span></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="text-align:center; color:#9ca3af; padding: 30px;">No registered customer profiles found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="section-title">Global Trains Fleet Logistics</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Train Number</th>
+                    <th>Train Fleet Name</th>
+                    <th>Source Station</th>
+                    <th>Destination Station</th>
+                    <th>Departure Schedule</th>
+                    <th>Base Fare Ticket</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in trains_list %}
+                <tr>
+                    <td><span class="badge">{{ t.train_number }}</span></td>
+                    <td><b>{{ t.train_name }}</b></td>
+                    <td>{{ t.source }}</td>
+                    <td>{{ t.destination }}</td>
+                    <td>{{ t.departure_time }}</td>
+                    <td style="color:#10b981; font-weight:700;">₹{{ t.price }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center; color:#9ca3af; padding: 40px;">No train profiles available. Click "Add New Train" to add routes.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

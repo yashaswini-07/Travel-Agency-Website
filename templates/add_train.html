@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelGo Admin - Add Train Fleet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin:0; padding:0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #111827; color: #f9fafb; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .form-container { width: 100%; max-width: 550px; background: #1f2937; padding: 40px; border-radius: 16px; border: 1px solid #374151; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .form-header { font-size: 24px; font-weight: 700; color: #10b981; margin-bottom: 8px; }
+        .form-subtitle { font-size: 14px; color: #9ca3af; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 12px; color: #9ca3af; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control { width: 100%; padding: 12px; background: #111827; border: 1px solid #374151; border-radius: 8px; color: white; font-size: 15px; outline: none; transition: border-color 0.2s; }
+        .form-control:focus { border-color: #10b981; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px; }
+        .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; border: none; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; }
+        .btn-cancel { background: #4b5563; color: white; transition: background 0.2s; }
+        .btn-cancel:hover { background: #374151; }
+        .btn-submit { background: #10b981; color: white; transition: background 0.2s; }
+        .btn-submit:hover { background: #059669; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">Register New Train Fleet Route</div>
+        <p class="form-subtitle">Fill out the form details below to instantiate data tracking for this schedule route.</p>
+        
+        <form action="{{ url_for('add_new_train') }}" method="POST">
+            <div class="form-group">
+                <label>Train Name</label>
+                <input type="text" name="train_name" class="form-control" placeholder="e.g. Siddhaganga Express" required>
+            </div>
+            <div class="form-group">
+                <label>Train Number</label>
+                <input type="text" name="train_number" class="form-control" placeholder="e.g. 12726" required>
+            </div>
+            <div class="form-group">
+                <label>Source Station</label>
+                <input type="text" name="source" class="form-control" placeholder="e.g. Hubli" required>
+            </div>
+            <div class="form-group">
+                <label>Destination Station</label>
+                <input type="text" name="destination" class="form-control" placeholder="e.g. Bengaluru" required>
+            </div>
+            <div class="form-group">
+                <label>Departure Time</label>
+                <input type="text" name="departure_time" class="form-control" placeholder="e.g. 05:15 AM" required>
+            </div>
+            <div class="form-group">
+                <label>Ticket Cost (INR)</label>
+                <input type="number" name="price" class="form-control" placeholder="e.g. 180" required>
+            </div>
+            <div class="form-actions">
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-cancel">Go Back</a>
+                <button type="submit" class="btn btn-submit">Save Fleet Details</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

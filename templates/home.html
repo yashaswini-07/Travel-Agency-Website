@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TravelGo - Search & Book</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin:0; padding:0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #111827; color: #f9fafb; min-height: 100vh; padding: 40px; }
+        .container { max-width: 950px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .logo { font-size: 24px; font-weight: 700; color: #38bdf8; }
+        .btn-logout { background: #ef4444; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 13px;}
+        .search-card { background: #1f2937; padding: 30px; border-radius: 16px; border: 1px solid #374151; margin-bottom: 40px; }
+        .search-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 11px; color: #9ca3af; font-weight: 700; text-transform: uppercase; }
+        .form-control { background: #111827; border: 1px solid #374151; padding: 14px; border-radius: 8px; color: white; font-size: 15px; outline: none; }
+        .btn-search { background: #38bdf8; color: #111827; padding: 14px; border-radius: 8px; font-weight: 700; border: none; width: 100%; cursor: pointer; }
+        .train-card { background: #1f2937; border: 1px solid #374151; border-radius: 12px; padding: 25px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .route-badge { background: #374151; color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .price { font-size: 22px; font-weight: 700; color: #10b981; text-align: right; margin-bottom: 5px;}
+        .btn-book { background: #10b981; color: white; padding: 10px 20px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; }
+        .success-banner { background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #10b981; padding: 15px; border-radius: 8px; margin-bottom: 30px; font-weight: 600; text-align: center; }
+        
+        /* SEAT SELECTION MODAL SYSTEM STYLES */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); align-items: center; justify-content: center; z-index: 1000; }
+        .modal-content { background: #1f2937; border: 1px solid #374151; border-radius: 16px; padding: 30px; max-width: 480px; width: 100%; text-align: center; position: relative;}
+        .close-modal { position: absolute; top: 15px; right: 20px; color: #9ca3af; font-size: 24px; cursor: pointer; }
+        .seat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 25px 0; padding: 10px; background: #111827; border-radius: 8px; max-height: 250px; overflow-y: auto;}
+        .seat { background: #374151; color: white; padding: 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; user-select: none; transition: background 0.2s;}
+        .seat.selected { background: #38bdf8; color: #111827; }
+        .seat.occupied { background: #4b5563; color: #9ca3af; cursor: not-allowed; opacity: 0.4; }
+        .legend { display: flex; justify-content: center; gap: 15px; font-size: 12px; color: #9ca3af; margin-bottom: 20px;}
+        .legend-item { display: flex; align-items: center; gap: 6px;}
+        .legend-box { width: 12px; height: 12px; border-radius: 3px; }
+        .confirm-booking-btn { background: #10b981; color: white; padding: 12px; border-radius: 8px; width: 100%; border: none; font-weight: 700; font-size: 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">TravelGo MasterEngine ✨</div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-size: 14px; color:#9ca3af;">Passenger: <b>{{ session.get('user_name') }}</b></span>
+                <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+            </div>
+        </div>
+
+        {% if request.args.get('booking_success') == 'true' %}
+        <div class="success-banner">🎉 Booking successful! Your tickets for seat(s) [ {{ request.args.get('seats') }} ] have been successfully reserved in our active database registry.</div>
+        {% endif %}
+
+        <div class="search-card">
+            <form action="{{ url_for('home') }}" method="POST">
+                <div class="search-grid">
+                    <div class="form-group">
+                        <label>Origin Departure Station</label>
+                        <select name="source" class="form-control" required>
+                            <option value="" disabled {% if not source %}selected{% endif %}>Select station...</option>
+                            {% for city in source_cities %}
+                                <option value="{{ city }}" {% if source == city %}selected{% endif %}>{{ city }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Destination Target Station</label>
+                        <select name="destination" class="form-control" required>
+                            <option value="" disabled {% if not destination %}selected{% endif %}>Select station...</option>
+                            {% for city in destination_cities %}
+                                <option value="{{ city }}" {% if destination == city %}selected{% endif %}>{{ city }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-search">Find Dynamic Schedules</button>
+            </form>
+        </div>
+
+        <div class="results-wrapper">
+            <h2 style="font-size: 18px; margin-bottom: 20px;">
+                {% if is_search_applied %} Filtered Itineraries Mapped ({{ trains|length }}) {% else %} Active System Fleet Log ({{ trains|length }}) {% endif %}
+            </h2>
+
+            {% for train in trains %}
+            <div class="train-card">
+                <div>
+                    <h3 style="font-size:18px; color:white; margin-bottom:6px;">{{ train.train_name }}</h3>
+                    <div style="display:flex; gap:10px; align-items:center; font-size:14px; color:#9ca3af;">
+                        <span class="route-badge">{{ train.train_number }}</span>
+                        <span><b>{{ train.source }}</b> ➔ <b>{{ train.destination }}</b></span>
+                        <span>•</span>
+                        <span style="color:#f59e0b;">🕒 {{ train.departure_time }}</span>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div class="price">₹{{ train.price }}</div>
+                    <button class="btn-book" onclick="openSeatModal('{{ train.train_name }}', '{{ train.train_number }}', '{{ train.source }}', '{{ train.destination }}', '{{ train.departure_time }}', '{{ train.price }}')">Book Ticket</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="seatModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeSeatModal()">&times;</span>
+            <h2 id="modalTrainTitle" style="font-size: 20px; color: white;">Select Seats</h2>
+            <p id="modalTrainSub" style="color: #9ca3af; font-size: 13px; margin-top: 4px;"></p>
+            
+            <div class="legend">
+                <div class="legend-item"><div class="legend-box" style="background:#374151;"></div>Available</div>
+                <div class="legend-item"><div class="legend-box" style="background:#38bdf8;"></div>Selected</div>
+                <div class="legend-item"><div class="legend-box" style="background:#4b5563; opacity:0.4;"></div>Booked</div>
+            </div>
+
+            <div class="seat-grid" id="seatLayoutContainer"></div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; background:#111827; padding:12px; border-radius:8px;">
+                <span style="font-size:13px; color:#9ca3af;">Selected: <b id="seatCountDisp" style="color:white;">0</b></span>
+                <span style="font-size:15px; font-weight:700; color:#10b981;" id="totalPriceDisp">₹0</span>
+            </div>
+
+            <form action="{{ url_for('book_train') }}" method="POST" id="hiddenBookingForm">
+                <input type="hidden" name="train_name" id="formTrainName">
+                <input type="hidden" name="train_number" id="formTrainNum">
+                <input type="hidden" name="source" id="formSource">
+                <input type="hidden" name="destination" id="formDestination">
+                <input type="hidden" name="departure_time" id="formDeparture">
+                <input type="hidden" name="selected_seats" id="formSelectedSeats">
+                <input type="hidden" name="price_paid" id="formPricePaid">
+                <button type="submit" class="confirm-booking-btn">Confirm Reservation Transaction</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let baseTicketPrice = 0;
+        let selectedSeatsArray = [];
+
+        function openSeatModal(name, num, src, dest, dept, price) {
+            baseTicketPrice = parseInt(price);
+            selectedSeatsArray = [];
+            
+            document.getElementById('modalTrainTitle').innerText = name;
+            document.getElementById('modalTrainSub').innerText = `${num} | ${src} to ${dest} (${dept})`;
+            
+            document.getElementById('formTrainName').value = name;
+            document.getElementById('formTrainNum').value = num;
+            document.getElementById('formSource').value = src;
+            document.getElementById('formDestination').value = dest;
+            document.getElementById('formDeparture').value = dept;
+            
+            // Build 24 structural seat selections grid dynamically
+            const container = document.getElementById('seatLayoutContainer');
+            container.innerHTML = '';
+            for(let i=1; i<=24; i++) {
+                let seatLabel = 'S' + (i < 10 ? '0' + i : i);
+                let seatDiv = document.createElement('div');
+                seatDiv.classList.add('seat');
+                seatDiv.innerText = seatLabel;
+                
+                // Simulate some pre-booked random occupied rows
+                if([3, 7, 14, 19].includes(i)) {
+                    seatDiv.classList.add('occupied');
+                } else {
+                    seatDiv.onclick = function() { toggleSeatSelection(seatDiv, seatLabel); };
+                }
+                container.appendChild(seatDiv);
+            }
+            
+            updateCostSummary();
+            document.getElementById('seatModal').style.display = 'flex';
+        }
+
+        function closeSeatModal() {
+            document.getElementById('seatModal').style.display = 'none';
+        }
+
+        function toggleSeatSelection(element, label) {
+            if(element.classList.contains('selected')) {
+                element.classList.remove('selected');
+                selectedSeatsArray = selectedSeatsArray.filter(item => item !== label);
+            } else {
+                element.classList.add('selected');
+                selectedSeatsArray.push(label);
+            }
+            updateCostSummary();
+        }
+
+        function updateCostSummary() {
+            let count = selectedSeatsArray.length;
+            let totalCost = count * baseTicketPrice;
+            document.getElementById('seatCountDisp').innerText = count;
+            document.getElementById('totalPriceDisp').innerText = '₹' + totalCost;
+            document.getElementById('formSelectedSeats').value = selectedSeatsArray.join(', ');
+            document.getElementById('formPricePaid').value = totalCost;
+        }
+    </script>
+</body>
+</html>
